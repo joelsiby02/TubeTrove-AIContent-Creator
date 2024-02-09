@@ -127,6 +127,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+TubeTrove/
 
 # Spyder project settings
 .spyderproject
