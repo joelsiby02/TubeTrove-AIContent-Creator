@@ -57,7 +57,7 @@ Experience the magic of TubeTroveAi with the generated YouTube titles and script
 ## Demo Video
 Watch our demo video to see TubeTroveAi in action and explore its features firsthand. Discover how our project combines the latest advancements in Generative AI with intuitive user interaction, empowering creators to produce captivating content effortlessly.
 
-[Demo Video on TubeTrove AI (https://aistudio.google.com/app/apikey)
+[Demo Video on TubeTrove AI (https://www.youtube.com/watch?v=kWPpe0sI7JE)
 
 ---
 
