@@ -3,7 +3,7 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain, SimpleSequentialChain
+from langchain.chains import LLMChain, SimpleSequentialChain, SequentialChain
 
 # Load environment variables from .env file
 load_dotenv()
@@ -28,28 +28,32 @@ title_prompt_template = PromptTemplate(
 # Define prompt template for script generation
 script_prompt_template = PromptTemplate(
     input_variables=['title'],
-    template="Suggets a nane for the title : {title} and Write me a Youtube video Script about on this title : {title}",
+    template="Write me a Youtube video Script about on this title : {title}",
 )
 
 # Initialize the LLMChain for title generation
-llm_title_chain = LLMChain(llm=llm, prompt=title_prompt_template, verbose=True)
+llm_title_chain = LLMChain(llm=llm, prompt=title_prompt_template, verbose=True, output_key='title')
 
 # Initialize the LLMChain for script generation
-llm_script_chain = LLMChain(llm=llm, prompt=script_prompt_template, verbose=True)
+llm_script_chain = LLMChain(llm=llm, prompt=script_prompt_template, verbose=True, output_key='script')
 
 # Joining the above chains to work sequentially
-seq_chain = SimpleSequentialChain(chains=[llm_title_chain, llm_script_chain], verbose=True)
+seq_chain = SequentialChain(chains=[llm_title_chain, llm_script_chain], input_variables=['topic'], output_variables=['title', 'script'], verbose=True)
 
 # Button to generate response
 if st.button("Generate Response"):
     # Main execution block
     if prompt:
         # Generate response using the sequential chain
-        response = seq_chain.run(prompt)
+        response = seq_chain({'topic': prompt})
         
         # Display the generated response
         st.markdown("**Generated Response:**")
-        for line in response.split("\n"):
-            st.write(line.strip())
+        title_response = response.get('title', '')
+        script_response = response.get('script', '')
+        st.subheader("Generated Title:")
+        st.write(title_response.strip())
+        st.subheader("Generated Script:")
+        st.write(script_response.strip())
     else:
         st.warning("Please provide a prompt.")

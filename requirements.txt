@@ -1,5 +1,0 @@
-wikipedia
-langchain
-streamlit
-chromadb
-tiktoken
