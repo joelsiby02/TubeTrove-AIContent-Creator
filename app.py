@@ -2,6 +2,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import streamlit as st
 import os
 from dotenv import load_dotenv
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 
 # Load environment variables from .env file
 load_dotenv()
@@ -9,23 +11,29 @@ load_dotenv()
 # Define the Google API key
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
-# Check if the GOOGLE_API_KEY is defined
-if GOOGLE_API_KEY is None:
-    st.error("Error: Google API Key not found. Please make sure to define the GOOGLE_API_KEY environment variable in your .env file.")
-else:
-    # Initialize the ChatGoogleGenerativeAI object with the Gemini model
-    llm = ChatGoogleGenerativeAI(google_api_key=GOOGLE_API_KEY, model="gemini-pro")
+llm = ChatGoogleGenerativeAI(google_api_key=GOOGLE_API_KEY, model="gemini-pro", temperature=0.2)
 
-    # Streamlit app
-    st.title("TubeTrove AI")
+# Streamlit app
+st.title("TubeTrove AI")
 
-    # Text input for user prompt
-    prompt = st.text_input("Plug in your Prompt below")
+# Text input for user prompt
+prompt = st.text_input("Plug in your Prompt below")
+    
+# Define prompt template
+prompt_template = PromptTemplate(
+    input_variables=['topic'],
+    template="Write me a Youtube video title about {topic}",
+)
 
-    # Button to generate response
-    if st.button("Generate Response"):
-        # Generate response using the invoke method of the llm object
-        result = llm.invoke(prompt)
-        # Display the generated response
+# Initialize the LLMChain object
+llm_title_chain = LLMChain(llm=llm, prompt=prompt_template, verbose=True)
+
+# Button to generate response
+if st.button("Generate Response"):
+    # Main execution block
+    if prompt:
+        response = llm_title_chain.run(topic=prompt)
         st.write("Generated Response:")
-        st.write(result.content)
+        st.write(response)
+    else:
+        st.warning("Please provide a prompt.")
